@@ -1,0 +1,28 @@
+# See https://stackoverflow.com/a/53138757
+# and https://www.reddit.com/r/C_Programming/comments/u83pdl/comment/i5mr283
+CC=gcc
+# Use C90 standard (strict), display all warning and error messages, optimise for debugging
+CFLAGS=-std=c99 -Wall -Werror -pedantic -Og
+
+SRC=src
+TGT=bin
+
+# The C files are in SRCS and the object files are/will be in TGTS
+SRCS = $(wildcard $(SRC)/*.c)
+TGTS = $(patsubst $(SRC)/%.c, $(TGT)/%.o, $(SRCS))
+
+# Overall target is to make the TGT directory if it does not exist,  and build the targets if needed
+.PHONY: all
+all: $(TGT) $(TGTS)
+
+$(TGT):
+	mkdir $(TGT)
+
+# If any of the C files is newer than its corresponding target, compile it to create/refresh the target
+$(TGT)/%.o: $(SRC)/%.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+# Delete any generated target files
+.PHONY: clean
+clean: 
+	rm -f $(TGTS)
